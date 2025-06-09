@@ -1,0 +1,105 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Company {
+  id           String   @id @default(cuid())
+  name         String
+  domain       String
+  foundedDate  DateTime?
+  industry     String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  snapshots    Snapshot[]
+  milestones   Milestone[]
+  
+  @@map("companies")
+}
+
+model Snapshot {
+  id              String   @id @default(cuid())
+  companyId       String
+  snapshotDate    DateTime
+  waybackUrl      String?
+  screenshotUrl   String?
+  thumbnailUrl    String?
+  isMajorChange   Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  
+  company         Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  sources         Source[]
+  commentary      Commentary[]
+  designAnalysis  DesignAnalysis[]
+  
+  @@map("snapshots")
+}
+
+model Milestone {
+  id            String   @id @default(cuid())
+  companyId     String
+  milestoneDate DateTime
+  type          String   // 'funding', 'product', 'team', 'acquisition'
+  title         String
+  description   String?
+  metrics       Json?    // {employees: 50, revenue: 1000000, users: 50000}
+  createdAt     DateTime @default(now())
+  
+  company       Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  
+  @@map("milestones")
+}
+
+model Source {
+  id          String   @id @default(cuid())
+  snapshotId  String
+  type        String   // 'news', 'filing', 'blog', 'social'
+  title       String
+  url         String
+  publisher   String?
+  publishDate DateTime?
+  excerpt     String?
+  createdAt   DateTime @default(now())
+  
+  snapshot    Snapshot @relation(fields: [snapshotId], references: [id], onDelete: Cascade)
+  
+  @@map("sources")
+}
+
+model Commentary {
+  id              String   @id @default(cuid())
+  snapshotId      String
+  commentaryText  String?
+  designNotes     String?
+  businessContext String?
+  tags            String // JSON string
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  snapshot        Snapshot @relation(fields: [snapshotId], references: [id], onDelete: Cascade)
+  
+  @@map("commentary")
+}
+
+model DesignAnalysis {
+  id               String   @id @default(cuid())
+  snapshotId       String
+  primaryColors    String // JSON string
+  fonts            String // JSON string
+  layoutType       String?
+  hasMobileVersion Boolean?
+  pageWeightKb     Int?
+  createdAt        DateTime @default(now())
+  
+  snapshot         Snapshot @relation(fields: [snapshotId], references: [id], onDelete: Cascade)
+  
+  @@map("design_analysis")
+}
