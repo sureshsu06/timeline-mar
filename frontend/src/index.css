@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply m-0 font-sans antialiased;
+  }
+  
+  code {
+    @apply font-mono;
+  }
+}
+
+@layer components {
+  .timeline-scrubber {
+    @apply relative w-full h-2 bg-gray-200 rounded-full cursor-pointer;
+  }
+  
+  .timeline-thumb {
+    @apply absolute top-0 w-4 h-4 bg-primary-600 rounded-full -mt-1 -ml-2 cursor-grab;
+    transition: all 0.1s ease;
+  }
+  
+  .timeline-thumb:hover {
+    @apply bg-primary-700 transform scale-110;
+  }
+  
+  .timeline-thumb:active {
+    @apply cursor-grabbing;
+  }
+  
+  .timeline-control-btn {
+    @apply p-2 rounded-full bg-gray-100 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200;
+  }
+  
+  .timeline-play-btn {
+    @apply bg-primary-600 hover:bg-primary-700 text-white;
+  }
+  
+  .preview-control-btn {
+    @apply p-2 rounded-lg text-gray-600 hover:text-gray-800 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200;
+  }
+}
